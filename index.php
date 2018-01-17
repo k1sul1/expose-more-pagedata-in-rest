@@ -5,6 +5,20 @@ Author: Christian Nikkanen
 Author URI: http://kisu.li
 */
 
+if (getenv('WP_ENV') ?? 'production' === 'production') {
+  add_filter("rest_authentication_errors", function($result) {
+    if (!empty($result)) {
+      return $result;
+    }
+
+    if (! is_user_logged_in()) {
+      return new WP_Error("rest_not_logged_in", "You are not currently logged in.", array("status" => 401));
+    }
+
+    return $result;
+  });
+}
+
 add_action("plugins_loaded", function() {
   $homepage = get_option("page_on_front");
   $blogpage = get_option("page_for_posts");
@@ -48,7 +62,7 @@ add_action("plugins_loaded", function() {
         // Sadly there's no archive pages for taxonomies, only terms.
         // https://wordpress.stackexchange.com/a/48440
         $taxonomies = [];
-        $tnomies = get_taxonomies(["public" => true], 'objects');
+        $tnomies = get_taxonomies(["public" => true], "objects");
 
         foreach ($tnomies as $tax) {
           $t = [];
@@ -57,7 +71,7 @@ add_action("plugins_loaded", function() {
 
             foreach ($terms as $term) {
               $term->archive_link = get_term_link($term);
-              error_log('add rest base here maybe if its possible to even query with taxonomies');
+              error_log("add rest base here maybe if its possible to even query with taxonomies");
               $t[] = $term;
             }
 
