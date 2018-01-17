@@ -31,12 +31,13 @@ add_action("plugins_loaded", function() {
       "callback" => function() {
         $post_types = [];
         $ptypes = get_post_types(["public" => true], "objects");
+        $pageForPosts = get_option("page_for_posts");
 
         foreach ($ptypes as $type) {
           if ($type->show_in_rest) {
             $type->archive_link = $type->name === "post"
-              ? get_permalink(get_option("page_for_posts"))
-              : get_post_type_archive_link($type);
+              ? $pageForPosts ? get_permalink($pageForPosts) : get_site_url() . '/'
+              : get_post_type_archive_link($type->name);
 
             if ($type->archive_link) {
               $post_types[] = $type;
