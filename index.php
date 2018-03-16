@@ -58,7 +58,7 @@ add_action("plugins_loaded", function() {
 
             foreach ($terms as $term) {
               $term->archive_link = get_term_link($term);
-              error_log("add rest base here maybe if its possible to even query with taxonomies");
+              $term->taxonomy_rest_base = $tax->rest_base;
               $t[] = $term;
             }
 
